@@ -1,0 +1,25 @@
+# ignore ALL files in ANY directory named the following:
+data/
+env/
+
+# ignore the following files
+.DS_Store
+data_processed/almanac_*
+data_processed/dnaexome*
+data_processed/filtered*
+data_processed/intersection_entrez_ids.txt
+data_processed/known_STRING_ids.txt
+data_processed/prot*
+data_processed/rna*
+data_processed/STRING_full_filtered.tsv
+data_processed/STRING_mapped_uniprot_ids.txt
+data_processed/STRING_no_entrez.txt
+data_processed/string_ids_prot_entrez.csv
+
+# MANUALLY ADDED FILES - make sure these are in the repo
+# data_processed/STRING_unmapped_stringids.txt
+# data_processed/STRING_unmapped_uniprot_ids.txt
+# data_processed/drug_to_class.tsv
+# data_processed/drug_to_therapy_class_manual.csv
+# data_processed/stringids_to_uniprotkb.tsv
+# data_processed/uniprot_ids_to_gene_ids.tsv
