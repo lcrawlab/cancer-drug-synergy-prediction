@@ -3,7 +3,7 @@ Github repo for cancer drug synergy prediction work by Alexandra M. Wong and Lor
 
 ## Introduction ##
 
-Drug resistance poses a significant challenge to cancer treatment, often caused by intratumor heterogeneity. Combination therapies have shown to be an effective strategy to prevent resistant cancer cells from escaping single-drug treatments. However, discovering new drug combinations through traditional molecular assays can be costly and time-consuming. \textit{In silico} approaches offer the opportunity to overcome this limitation by enabling the exploration of many candidate combinations at scale. This study systematically evaluates the effectiveness of various machine learning algorithms and drug synergy prediction tasks. Our findings challenge the assumption that multi-modal data and complex model architectures automatically yield the best predictive performance.
+Drug resistance poses a significant challenge to cancer treatment, often caused by intratumor heterogeneity. Combination therapies have shown to be an effective strategy to prevent resistant cancer cells from escaping single-drug treatments. However, discovering new drug combinations through traditional molecular assays can be costly and time-consuming. _In silico_ approaches offer the opportunity to overcome this limitation by enabling the exploration of many candidate combinations at scale. This study systematically evaluates the effectiveness of various machine learning algorithms and drug synergy prediction tasks. Our findings challenge the assumption that multi-modal data and complex model architectures automatically yield the best predictive performance.
 
 ## Installing Requirements ##
 To install the requirements stored in requirements.txt, make sure you have a compatible python version with the needed packages. We recommend python 3.11. Then run:
@@ -13,15 +13,14 @@ You also may need to enforce a numpy version below 2:
 ```pip install "numpy<2"```
 
 ## Data Downloads ##
-Download the NCI-ALMANAC dataset with the drug combination data
-- https://wiki.nci.nih.gov/display/NCIDTPdata/NCI-ALMANAC
+Download the [NCI-ALMANAC dataset](https://wiki.nci.nih.gov/display/NCIDTPdata/NCI-ALMANAC) with the drug combination data
 
 Download the CellMiner data
-- DNA exome sequencing: https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_DNA__Exome_Seq_none.zip
-- RNA expression: https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_RNA__5_Platform_Gene_Transcript_Average_z_scores.zip
-- Protein expression: https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_Protein__SWATH_(Mass_spectrometry)_Protein.zip
+- [DNA exome sequencing](https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_DNA__Exome_Seq_none.zip)
+- [RNA expression](https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_RNA__5_Platform_Gene_Transcript_Average_z_scores.zip)
+- [Protein expression](https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_Protein__SWATH_(Mass_spectrometry)_Protein.zip)
 
-While it is not necessary, you can also ensure the genes present in the dataset belong to the STRING protein-protein interaction network for additional biological analyses. If so, feel free to download the STRING database from https://string-db.org/cgi/download?sessionId=b22Ezc67moU2
+While it is not necessary, you can also ensure the genes present in the dataset belong to the STRING protein-protein interaction network for additional biological analyses. If so, feel free to download the [STRING database](https://string-db.org/cgi/download?sessionId=b22Ezc67moU2)
 - Save the `9606.protein.links.detailed.v11.5.txt` file
 - Save the `9606.protein.info.v11.5.txt` file
 
