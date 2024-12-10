@@ -2,9 +2,9 @@ import argparse
 import numpy as np
 import pandas as pd
 import scipy.stats
-from datasets import *
+from dataset_creation.datasets import *
 from functools import partial
-from models_baselines import *
+from models.src.models_baselines import *
 from multiprocessing import Pool
 from sklearn.model_selection import KFold
 from sklearn.metrics import *
@@ -50,8 +50,8 @@ def evaluate_snn_bc_model(model, test_dataloader):
     with torch.no_grad():
         y_pred = np.ndarray.flatten(model.predict(X_test).cpu().detach().numpy())
         y_test = np.ndarray.flatten(y_test.cpu().detach().numpy())
-        print("Y_test flattened shape: {y_test.shape}")
-        print("Y_pred flattened shape: {y_pred.shape}")
+        print(f"Y_test flattened shape: {y_test.shape}")
+        print(f"Y_pred flattened shape: {y_pred.shape}")
         accuracy = accuracy_score(y_test, y_pred)
         sensitivity = recall_score(y_test, y_pred)
         specificity = recall_score(y_test, y_pred, pos_label=0)
@@ -110,8 +110,8 @@ def evaluate_snn_reg_model(model, test_dataloader):
     with torch.no_grad():
         y_pred = np.ndarray.flatten(model.predict(X_test).cpu().detach().numpy())
         y_test = np.ndarray.flatten(y_test.cpu().detach().numpy())
-        print("Y_test flattened shape: {y_test.shape}")
-        print("Y_pred flattened shape: {y_pred.shape}")
+        print(f"Y_test flattened shape: {y_test.shape}")
+        print(f"Y_pred flattened shape: {y_pred.shape}")
         mse = mean_squared_error(y_test, y_pred)
         rmse = np.sqrt(mse)
         mae = mean_absolute_error(y_test, y_pred)

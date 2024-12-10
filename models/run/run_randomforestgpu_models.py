@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 import scipy.stats
 import time
-from datasets import *
+from dataset_creation.datasets import *
 from functools import partial
-from models_baselines import *
+from models.src.models_baselines import *
 from multiprocessing import Pool
 from sklearn.model_selection import KFold
 from sklearn.metrics import *

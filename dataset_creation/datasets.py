@@ -97,7 +97,7 @@ def split_data(ds, train_size=0.8, tune_size=0.1, test_size=0.1, random_state=42
 # OUTPUT:
 #   fn_prefix: str
 def get_all_cancer_dataset_filename(use_mfp, use_dna, use_rna, use_prot, use_bc, use_csreg, use_pgreg, mfp_len=256, bc_cutoff=0):
-    fn_prefix = 'data/ASP_dataset_slices/all_cancer' + '_'
+    fn_prefix = '../data/ASP_dataset_slices/all_cancer' + '_'
     if use_mfp:
         fn_prefix += str(mfp_len) + '_mfp'
     if use_dna:
@@ -129,7 +129,7 @@ def get_cancer_type_indices_filename(cancer_type, use_bc, use_csreg, use_pgreg):
     if cancer_type not in valid_cancer_types:
         raise ValueError(f'cancer_type should be one of {valid_cancer_types}')
     
-    fn_prefix = 'data/ASP_dataset_slices/' + cancer_type + '_'
+    fn_prefix = '../data/ASP_dataset_slices/' + cancer_type + '_'
     if (use_bc or use_csreg) and use_pgreg:
         raise ValueError('Cannot use both ComboScore and Percent Growth')
     elif not(use_bc or use_csreg or use_pgreg):
@@ -154,7 +154,7 @@ def get_drug_class_indices_filename(drug_class, use_bc, use_csreg, use_pgreg):
     if drug_class not in valid_drug_classes:
         raise ValueError(f'drug_class should be one of {valid_drug_classes}')
     
-    fn_prefix = 'data/ASP_dataset_slices/all_cancer_' + drug_class + '_'
+    fn_prefix = '../data/ASP_dataset_slices/all_cancer_' + drug_class + '_'
     if (use_bc or use_csreg) and use_pgreg:
         raise ValueError('Cannot use both ComboScore and Percent Growth')
     elif not(use_bc or use_csreg or use_pgreg):
@@ -208,7 +208,7 @@ def load_dataloader(filename, balance_classes=False, batch_size=128, indices_fil
 # OUTPUT:
 #   mask: torch.Tensor, shape (num_genes, num_features) - to match input layer weights matrix
 def get_mask1gl(use_mfp, use_dna, use_rna, use_prot, output_fp, use_cs, use_pg, mfp_len=256):
-    fn_prefix = 'data/ASP_dataset_slices/'
+    fn_prefix = '../data/ASP_dataset_slices/'
     mask_suffix = '_mask1gl.csv'
     mask_fns_to_append = []
     if use_mfp:
@@ -274,7 +274,7 @@ def get_masks_concat(use_mfp, use_dna, use_rna, use_prot, use_bc, use_csreg, use
     if not (use_mfp or use_dna or use_rna or use_prot):
         raise ValueError("Must use at least one omics layer")
     
-    dir_path = 'data/ASP_dataset_slices/concat_masks/'
+    dir_path = '../data/ASP_dataset_slices/concat_masks/'
     ppin_prefix = 'ppin_'
     mfp_prefix = str(mfp_len)+'_mfp'
     dna_prefix = 'dna'

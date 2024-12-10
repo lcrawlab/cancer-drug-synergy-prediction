@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.optim as optim
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.svm import LinearSVC, LinearSVR
 from sklearn.metrics import accuracy_score
 
@@ -225,63 +224,6 @@ class SVMModelRegression(nn.Module):
     def predict(self, X_test):
         return self.svm_model.predict(X_test)
 
-
-# Define K-Nearest Neighbors model
-class KNNModelBC(nn.Module):
-    def __init__(self, n_neighbors=4, p=2, weights='uniform', algorithm='auto', metric='minkowski'):
-        super(KNNModelBC, self).__init__()
-        self.n_neighbors = n_neighbors
-        self.weights = weights
-        self.algorithm = algorithm
-        self.p = p
-        self.metric = metric
-        self.knn_model = KNeighborsClassifier(
-            n_neighbors=self.n_neighbors,
-            weights=self.weights,
-            algorithm=self.algorithm,
-            metric=self.metric,
-            p=self.p,
-        )
-
-    def forward(self, x):
-        # KNN model doesn't have a forward pass in the traditional sense,
-        # so we won't implement this method
-        raise NotImplementedError
-
-    def fit(self, X_train, y_train):
-        self.knn_model.fit(X_train, y_train)
-
-    def predict(self, X_test):
-        return self.knn_model.predict(X_test)
-    
-
-class KNNModelRegression(nn.Module):
-    def __init__(self, n_neighbors=4, p=2, weights='uniform', algorithm='auto', metric='minkowski'):
-        super(KNNModelRegression, self).__init__()
-        self.n_neighbors = n_neighbors
-        self.weights = weights
-        self.algorithm = algorithm
-        self.p = p
-        self.metric = metric
-        self.knn_model = KNeighborsRegressor(
-            n_neighbors=self.n_neighbors,
-            weights=self.weights,
-            algorithm=self.algorithm,
-            metric=self.metric,
-            p=self.p,
-            )
-
-    def forward(self, x):
-        # KNN model doesn't have a forward pass in the traditional sense,
-        # so we won't implement this method
-        raise NotImplementedError
-
-    def fit(self, X_train, y_train):
-        self.knn_model.fit(X_train, y_train)
-
-    def predict(self, X_test):
-        return self.knn_model.predict(X_test)
-    
 
 class SNNModelBC(nn.Module):
     def __init__(self, input_size, hidden_size=256, dropout=0.8, learn_rate=0.0002):

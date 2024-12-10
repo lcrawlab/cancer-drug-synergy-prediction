@@ -1,7 +1,6 @@
-from datasets import *
-from torchsummary import summary
+from dataset_creation.datasets import *
+from dataset_creation.getProcessedData import *
 from prettytable import PrettyTable
-from pytorchGetData import *
 from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import *
 from sklearn.model_selection import KFold, train_test_split
@@ -52,7 +51,6 @@ class PCNNGLModel(nn.Module):
         self.num_epochs = num_epochs
         self.learning_rate = learning_rate
         self.binary_classification = binary_classification
-        #self.dropout = nn.Dropout(p=0.8)
         self.train_loss_over_time = []
         self.tune_loss_over_time = []
 
@@ -97,7 +95,6 @@ class PCNNGLModel(nn.Module):
             self.input.weight = nn.Parameter(self.input.weight * self.mask) # 0 out connections not in mask again
         out = self.ReLU(out)
         out = self.batch_norms[1](out) # 1 to skip input layer
-        #out = self.dropout(out)
         out = self.output(out)
         
         if self.binary_classification:
@@ -384,8 +381,8 @@ def test_cov_model(model, test_dataloader, output_file_prefix):
         # Make sure Y_pred and Y_test are both on cpu for accuracy metrics and plotting
         y_pred = y_pred.cpu().detach().numpy() 
         y_test = y_test.cpu().detach().numpy()
-        print("Y test shape: " + str(y_test.shape))
-        print("Y pred shape: " + str(y_pred.shape))
+        print(f"Y test shape: " + str(y_test.shape))
+        print(f"Y pred shape: " + str(y_pred.shape))
 
         if model.binary_classification:
             accuracy = accuracy_score(y_test, y_pred)

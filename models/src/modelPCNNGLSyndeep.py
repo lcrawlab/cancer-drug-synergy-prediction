@@ -1,16 +1,10 @@
-from datasets import *
-from modelPCNNGL import *
-from torchsummary import summary
-from prettytable import PrettyTable
-from pytorchGetData import *
-from scipy.stats import pearsonr, spearmanr
+from dataset_creation.datasets import *
+from dataset_creation.getProcessedData import *
+from models.src.modelPCNNGL import *
 from sklearn.metrics import *
 import argparse
-import numpy as np
-import matplotlib.pyplot as plt
 import os
 import pandas as pd
-import pickle
 import time
 import torch
 import torch.nn as nn

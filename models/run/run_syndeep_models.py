@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 import scipy.stats
 import torch
-from datasets import *
-from models_baselines import *
+from dataset_creation.datasets import *
+from models.src.models_baselines import *
 from sklearn.model_selection import KFold
 from sklearn.metrics import *
 
@@ -49,8 +49,8 @@ def evaluate_syndeep_bc_model(model, test_dataloader):
     with torch.no_grad():
         y_pred = np.ndarray.flatten(model.predict(X_test).cpu().detach().numpy())
         y_test = np.ndarray.flatten(y_test.cpu().detach().numpy())
-        print("Y_test flattened shape: {y_test.shape}")
-        print("Y_pred flattened shape: {y_pred.shape}")
+        print(f"Y_test flattened shape: {y_test.shape}")
+        print(f"Y_pred flattened shape: {y_pred.shape}")
         accuracy = accuracy_score(y_test, y_pred)
         sensitivity = recall_score(y_test, y_pred)
         specificity = recall_score(y_test, y_pred, pos_label=0)
@@ -109,8 +109,8 @@ def evaluate_syndeep_reg_model(model, test_dataloader):
     with torch.no_grad():
         y_pred = np.ndarray.flatten(model.predict(X_test).cpu().detach().numpy())
         y_test = np.ndarray.flatten(y_test.cpu().detach().numpy())
-        print("Y_test flattened shape: {y_test.shape}")
-        print("Y_pred flattened shape: {y_pred.shape}")
+        print(f"Y_test flattened shape: {y_test.shape}")
+        print(f"Y_pred flattened shape: {y_pred.shape}")
         mse = mean_squared_error(y_test, y_pred)
         rmse = np.sqrt(mse)
         mae = mean_absolute_error(y_test, y_pred)

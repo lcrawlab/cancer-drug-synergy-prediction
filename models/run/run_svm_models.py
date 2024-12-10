@@ -2,8 +2,8 @@ import argparse
 import numpy as np
 import pandas as pd
 import scipy.stats
-from datasets import *
-from models_baselines import *
+from dataset_creation.datasets import *
+from models.src.models_baselines import *
 from sklearn.model_selection import KFold
 from sklearn.metrics import *
 
