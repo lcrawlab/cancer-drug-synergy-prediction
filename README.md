@@ -44,7 +44,8 @@ While it is not necessary, you can also ensure the genes present in the dataset 
 2. Running training and evaluation code is present in the `models/run` directory
 
 ## Example / Tutorial ##
-1. There is an example dataset stored in `example_data` directory along with an example mask file for the PCNNGL model. Run the `example_models_run.ipynb` jupyter notebook, which will create output files in the `example_output` directory. This jupyter notebook includes cases of training different parameters of all models used in the study and shows test performance for the best of the example parameter models. Note that example parameters have been chosen for ease of locally running the code on a standard personal computer to demonstrate functionality. The full dataset and training analyses will require GPU-enabled and larger memory computing clusters.
+1. Unzip the compressed `example_data/all_cancer_256_mfp_bc0_comboscore.zip` file
+2. There is an example dataset stored in `example_data` directory along with an example mask file for the PCNNGL model. Run the `example_models_run.ipynb` jupyter notebook, which will create output files in the `example_output` directory. This jupyter notebook includes cases of training different parameters of all models used in the study and shows test performance for the best of the example parameter models. Note that example parameters have been chosen for ease of locally running the code on a standard personal computer to demonstrate functionality. The full dataset and training analyses will require GPU-enabled and larger memory computing clusters.
 
 ## Relevant Citations ##
 bioRxiv link to be posted here
