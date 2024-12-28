@@ -47,7 +47,8 @@ While it is not necessary, you can also ensure the genes present in the dataset 
 2. There is an example dataset stored in `example_data` directory along with an example mask file for the PCNNGL model. Run the `example_models_run.ipynb` jupyter notebook, which will create output files in the `example_output` directory. This jupyter notebook includes cases of training different parameters of all models used in the study and shows test performance for the best of the example parameter models. Note that example parameters have been chosen for ease of locally running the code on a standard personal computer to demonstrate functionality. The full dataset and training analyses will require GPU-enabled and larger memory computing clusters.
 
 ## Relevant Citations ##
-[Preprint](https://www.biorxiv.org/content/10.1101/2024.12.24.630216v1)
+A.M. Wong and L. Crawford. Rethinking cancer drug synergy prediction: a call for standardization in machine learning applications. bioRxiv.
+[https://doi.org/10.1101/2024.12.24.630216](https://doi.org/10.1101/2024.12.24.630216)
 
 ## Questions and Feedback ##
 For questions or concerns with this work, please contact [Alexandra M. Wong](mailto:alexandra_wong@brown.edu) or [Lorin Crawford](mailto:lcrawford@microsoft.com). Feedback and questions on the software, paper, and tutorial is appreciated!
