@@ -15,7 +15,8 @@ data_processed/STRING_full_filtered.tsv
 data_processed/STRING_mapped_uniprot_ids.txt
 data_processed/STRING_no_entrez.txt
 data_processed/string_ids_prot_entrez.csv
-example_data/all_cancer_256_mfp_bc0_comboscore.csv # Unzip the compressed file instead
+# Unzip the compressed file instead
+example_data/all_cancer_256_mfp_bc0_comboscore.csv 
 
 # MANUALLY ADDED FILES - make sure these are in the repo
 # data_processed/STRING_unmapped_stringids.txt
