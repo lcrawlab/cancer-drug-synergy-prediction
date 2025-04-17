@@ -20,17 +20,15 @@ Download the CellMiner data
 - [RNA expression](https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_RNA__5_Platform_Gene_Transcript_Average_z_scores.zip)
 - [Protein expression](https://discover.nci.nih.gov/cellminer/download/processeddataset/nci60_Protein__SWATH_(Mass_spectrometry)_Protein.zip)
 
-While it is not necessary, you can also ensure the genes present in the dataset belong to the STRING protein-protein interaction network for additional biological analyses. If so, feel free to download the [STRING database](https://string-db.org/cgi/download?sessionId=b22Ezc67moU2)
+We also ensured the genes present in the dataset belong to the STRING protein-protein interaction network for additional biological analyses. If so, feel free to download the [STRING database](https://string-db.org/cgi/download?sessionId=b22Ezc67moU2)
 - Save the `9606.protein.links.detailed.v11.5.txt` file
 - Save the `9606.protein.info.v11.5.txt` file
 
 ## Pre-processing the data - `preprocessing_files/` ##
-1. If filtering by STRING:
-    - Run the main function in `string_preprocessing.py`. For the first time, you should use the `--from_original` flag
-    - Run the `preprocessing.ipynb`
-2. Run the `filter_data.ipynb`
-    - If not using STRING to filter, modify to exclude the STRING filtration
-3. Run the `nci_almanac_therapy_classification.ipynb`
+1. Run the main function in `string_preprocessing.py`. For the first time, you should use the `--from_original` flag
+2. Run the `preprocessing.ipynb`
+3. Run the `filter_data.ipynb`
+4. Run the `nci_almanac_therapy_classification.ipynb`
     - Make sure to have the manual retrieval of drug to therapy classes mapping
 
 ## Generating the dataset CSV files - `dataset_creation/` ##

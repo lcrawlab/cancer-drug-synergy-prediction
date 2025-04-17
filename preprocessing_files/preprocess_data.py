@@ -2,7 +2,7 @@ from functools import partial
 from os.path import exists
 from rdkit import Chem
 from rdkit.Chem import AllChem, DataStructs, Descriptors
-#from string_preprocessing import *
+from string_preprocessing import *
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
