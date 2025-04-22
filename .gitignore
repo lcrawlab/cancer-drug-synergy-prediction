@@ -1,6 +1,7 @@
 # ignore ALL files in ANY directory named the following:
 data/
 env/
+figures/
 
 # ignore the following files
 .DS_Store
