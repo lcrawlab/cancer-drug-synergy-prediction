@@ -8,7 +8,7 @@ import pandas as pd
 # OUTPUT:
 #   string_df (Pandas Dataframe) - the dataframe containing the full PPIN
 def get_known_STRING_df():
-    full_string_fp='../data_processed/STRING_full_filtered.tsv'
+    full_string_fp='data_processed/STRING_full_filtered.tsv'
     if exists(full_string_fp):
         string_df = pd.read_csv(full_string_fp, sep='\t')
         return string_df
@@ -22,7 +22,7 @@ def get_known_STRING_df():
 # OUTPUT:
 #   string_df (Pandas Dataframe) - the dataframe containing the full PPIN
 def get_known_STRING_protein_df():
-    full_string_fp='../data_processed/STRING_full_filtered_protsym.tsv'
+    full_string_fp='data_processed/STRING_full_filtered_protsym.tsv'
     if exists(full_string_fp):
         string_df = pd.read_csv(full_string_fp, sep='\t')
         return string_df
@@ -36,7 +36,7 @@ def get_known_STRING_protein_df():
 # OUTPUT:
 #   string_protein_list (list) - list of proteins that are represented in the STRING PPIN
 def get_string_protein_list():
-    string_protein_fp='../data_processed/STRING_full_filtered_protsym_unique_proteins.txt'
+    string_protein_fp='data_processed/STRING_full_filtered_protsym_unique_proteins.txt'
     if exists(string_protein_fp):
         # Read in line separated file of genes
         with open(string_protein_fp, 'r') as f:
@@ -118,7 +118,7 @@ def get_protein_subnetwork(
 #   prot_id_to_symbol_dict (dict) - dictionary mapping protein id to protein symbol
 def get_protein_id_to_symbol_dict():
     prot_id_to_symbol_dict = {}
-    possible_dict_fp = '../data_processed/prot_id_to_symbol.csv'
+    possible_dict_fp = 'data_processed/prot_id_to_symbol.csv'
     if exists(possible_dict_fp):
         with open(possible_dict_fp, 'r') as f:
             for line in f:
@@ -127,7 +127,7 @@ def get_protein_id_to_symbol_dict():
         return prot_id_to_symbol_dict
     
     # If not already created, create the dictionary from original STRING file
-    with open('../data/STRING_homosapiens/9606.protein.info.v11.5.txt', 'r') as f:
+    with open('data/STRING_homosapiens/9606.protein.info.v11.5.txt', 'r') as f:
         f.readline()
         for line in f:
             line_split = line.split('\t')
@@ -189,14 +189,14 @@ if __name__ == "__main__":
     
     full_string_df = None
     prot_id_to_symbol = get_protein_id_to_symbol_dict()
-    output_file_prefix = '../data_processed/STRING_full_filtered'
+    output_file_prefix = 'data_processed/STRING_full_filtered'
     output_file_prostym_suffix = '_protsym'
     # Keep track of which data modalities are being used to filter the PPIN
     of_filter = ''
     of_suffix = '.tsv'
 
     if args.from_original:
-        full_string_detailed_file='../data/STRING_homosapiens/9606.protein.links.detailed.v11.5.txt'
+        full_string_detailed_file='data/STRING_homosapiens/9606.protein.links.detailed.v11.5.txt'
         full_string_detailed_df = pd.read_csv(full_string_detailed_file, sep=' ')
         print("Read the CSV")
         known_interactions_df = get_known_interactions(full_string_detailed_df)
