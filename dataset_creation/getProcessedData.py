@@ -183,10 +183,10 @@ def get_processed_drug_data(
 #   identifier_df (Pandas dataframe) - dataframe mapping the identifier and entrez ids
 #   df (Pandas dataframe) - dataframe to remove low variance columns from
 #   intersection_entrez_fn - filename containing entrez ids that are in the intersection of all modalities
-#   threshold (float) - threshold for variance to remove columns
+#   threshold (int) - threshold for what top percentage highest variance to retain (0-100)
 # OUTPUT:
 #   df (Pandas dataframe) - dataframe with low variance columns removed
-def remove_low_var_columns(identifier_df, df, intersection_entrez_fn='data_processed/intersection_entrez_ids.txt', threshold=0):
+def remove_low_var_columns(identifier_df, df, intersection_entrez_fn='data_processed/intersection_entrez_ids.txt', threshold=100):
     intersection_entrez_ids = set()
     with open (intersection_entrez_fn, 'r') as f:
         for line in f:
@@ -195,11 +195,27 @@ def remove_low_var_columns(identifier_df, df, intersection_entrez_fn='data_proce
     print('Original number of features:', df.shape[1])
 
     df_var = df.var()
-    high_var = df_var[df_var > threshold]
-    high_var_entrez = set(identifier_df[identifier_df['Identifier'] == identifier]['Entrez'].values[0] for identifier in high_var.index)
+    sorted_var = df_var.sort_values(ascending=False)
+    
+    # Calculate how many features to keep based on the percentage
+    num_features_to_keep = int(len(sorted_var) * threshold / 100)
+    print(f'Keeping top {threshold}% of features = {num_features_to_keep} features')
+    
+    # Get the identifiers of the top variance features
+    high_var_identifiers = sorted_var.index[:num_features_to_keep]
+    
+    # Get the entrez IDs for these high variance features
+    high_var_entrez = set()
+    for identifier in high_var_identifiers:
+        entrez_values = identifier_df[identifier_df['Identifier'] == identifier]['Entrez'].values
+        if len(entrez_values) > 0:
+            high_var_entrez.add(entrez_values[0])
+    
+    # Find intersection with original entrez IDs
     new_intersection_entrez = high_var_entrez.intersection(intersection_entrez_ids)
 
-    high_var_df = df[high_var.index]
+    # Create dataframe with only high variance columns
+    high_var_df = df[high_var_identifiers]
 
     print('Number of features after removing low variance columns:', high_var_df.shape[1])
     print('Number of unique entrez IDs after removing low variance columns:', len(new_intersection_entrez))
