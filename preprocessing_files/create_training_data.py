@@ -365,7 +365,7 @@ def get_filtered_data():
     filtered_protein = pd.concat([protein_cell_lines, normalized_protein_df], axis=1)
 
     # Save filtered data, figure out indices
-    filtered_almcomb_pg_df.to_csv("data_processed/filtered_almcomb_pg_df.csv", index=False)
+    filtered_almcomb_pg_df.to_csv("data_processed/filtered_almcomb_pg.csv", index=False)
     filtered_almcomb_combo_df.to_csv("data_processed/filtered_almcomb_combo.csv", index=False)
     filtered_dna.to_csv("data_processed/filtered_dna_df.csv", index=False)
     filtered_rna.to_csv("data_processed/filtered_rna_df.csv", index=False)

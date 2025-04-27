@@ -41,8 +41,8 @@ def get_ppin(ppin_file):
 #   dna_df (Pandas dataframe) - filtered DNA data
 #   dna_identifier_df (Pandas dataframe) - filtered DNA identifier data to gene name to entrez id
 def get_dna_data(
-    dna_df_fp='../data_processed/filtered_dna_df.csv',
-    dna_identifier_fp='../data_processed/dnaexome_identifier_gene_name_entrez_id.csv',
+    dna_df_fp='data_processed/filtered_dna_df.csv',
+    dna_identifier_fp='data_processed/dnaexome_identifier_gene_name_entrez_id.csv',
 ):
     dna_df = pd.read_csv(dna_df_fp, index_col='Unnamed: 0')
     dna_identifier_df = pd.read_csv(dna_identifier_fp)
@@ -66,8 +66,8 @@ def get_dna_data(
 #   rna_df (Pandas dataframe) - filtered RNA data
 #   rna_identifier_df (Pandas dataframe) - filtered RNA gene name to entrez id
 def get_rna_data(
-    rna_df_fp='../data_processed/filtered_rna_df.csv',
-    rna_identifier_fp='../data_processed/rna_gene_name_entrez_id.csv',
+    rna_df_fp='data_processed/filtered_rna_df.csv',
+    rna_identifier_fp='data_processed/rna_gene_name_entrez_id.csv',
 ):
     rna_df = pd.read_csv(rna_df_fp, index_col='Unnamed: 0')
     rna_identifier_df = pd.read_csv(rna_identifier_fp)
@@ -90,8 +90,8 @@ def get_rna_data(
 #   protein_df (Pandas dataframe) - filtered protein data
 #   protein_identifier_df (Pandas dataframe) - filtered protein gene name to entrez id
 def get_protein_data(
-    protein_df_fp='../data_processed/filtered_protein_df.csv',
-    protein_identifier_fp='../data_processed/protein_identifier_gene_name_entrez_id.csv',
+    protein_df_fp='data_processed/filtered_protein_df.csv',
+    protein_identifier_fp='data_processed/protein_identifier_gene_name_entrez_id.csv',
 ):
     protein_df = pd.read_csv(protein_df_fp, index_col='Unnamed: 0')
     protein_identifier_df = pd.read_csv(protein_identifier_fp)
@@ -118,10 +118,10 @@ def get_protein_data(
 #   nsc_to_mfp (dict) - dictionary mapping NSC drug ID to MFP bit vector
 #   nsc_to_prop_df (Pandas dataframe) - dictionary mapping NSC drug ID to physiochemical properties
 def get_processed_drug_data(
-    drug_df_fp='../data_processed/filtered_almanac_df.csv',
-    drug_comboscore_fp='../data_processed/filtered_almanac_comboscore_df.csv',
-    nsc_to_mfp_fp='../data_processed/almanac_nsc_to_morgan_fingerprints256.tsv',
-    nsc_to_prop_fp='../data_processed/almanac_nsc_to_properties.tsv',
+    drug_df_fp='data_processed/filtered_almcomb_pg.csv',
+    drug_comboscore_fp='data_processed/filtered_almcomb_combo.csv',
+    nsc_to_mfp_fp='data_processed/almanac_nsc_to_morgan_fingerprints256.tsv',
+    nsc_to_prop_fp='data_processed/almanac_nsc_to_properties.tsv',
     cancer_type='ALL',
 ):
     drug_pg_df = pd.read_csv(drug_df_fp)
@@ -135,14 +135,19 @@ def get_processed_drug_data(
     # Convert NSC1 and NSC2 columns to ints then strings
     drug_pg_df['NSC1'] = drug_pg_df['NSC1'].astype(int).astype(str)
     drug_pg_df['NSC2'] = drug_pg_df['NSC2'].astype(int).astype(str)
-    # Convert CONC1, CONC2, SCORE, DRUGORDER columns to floats
+    # Convert CONC1, CONC2, PERCENTGROWTH columns to floats
     drug_pg_df['CONC1'] = drug_pg_df['CONC1'].astype(float)
     drug_pg_df['CONC2'] = drug_pg_df['CONC2'].astype(float)
-    drug_pg_df['SCORE'] = drug_pg_df['SCORE'].astype(float)
-    # Drop the SCORE column
-    drug_pg_df = drug_pg_df.drop(columns=['SCORE'])
     drug_pg_df['PERCENTGROWTH'] = drug_pg_df['PERCENTGROWTH'].astype(float)
-    drug_pg_df['DRUGORDER'] = drug_pg_df['DRUGORDER'].astype(float)
+
+    # CREATING INVARIANCE TO DRUG COMBINATION ORDER
+    # For all rows, add a new row with the NSC1 and CONC1 swapped with NSC2 and CONC2
+    drug_pg_df_swapped = drug_pg_df.copy()
+    drug_pg_df_swapped['NSC1'] = drug_pg_df['NSC2']
+    drug_pg_df_swapped['NSC2'] = drug_pg_df['NSC1']
+    drug_pg_df_swapped['CONC1'] = drug_pg_df['CONC2']
+    drug_pg_df_swapped['CONC2'] = drug_pg_df['CONC1']
+    drug_pg_df = pd.concat([drug_pg_df, drug_pg_df_swapped], ignore_index=True)
 
     drug_comboscore_df = pd.read_csv(drug_comboscore_fp)
     if cancer_type != 'ALL':
@@ -152,7 +157,16 @@ def get_processed_drug_data(
     # Convert NSC1 and NSC2 columns to ints then strings
     drug_comboscore_df['NSC1'] = drug_comboscore_df['NSC1'].astype(int).astype(str)
     drug_comboscore_df['NSC2'] = drug_comboscore_df['NSC2'].astype(int).astype(str)
-    drug_comboscore_df['SCORE'] = drug_comboscore_df['SCORE'].astype(float)
+    drug_comboscore_df['COMBOSCORE'] = drug_comboscore_df['COMBOSCORE'].astype(float)
+    drug_comboscore_df['ZIP'] = drug_comboscore_df['ZIP'].astype(float)
+    drug_comboscore_df['HSA'] = drug_comboscore_df['HSA'].astype(float)
+
+    # CREATING INVARIANCE TO DRUG COMBINATION ORDER
+    # For all rows, add a new row with the NSC1 and NSC2 swapped
+    drug_comboscore_df_swapped = drug_comboscore_df.copy()
+    drug_comboscore_df_swapped['NSC1'] = drug_comboscore_df['NSC2']
+    drug_comboscore_df_swapped['NSC2'] = drug_comboscore_df['NSC1']
+    drug_comboscore_df = pd.concat([drug_comboscore_df, drug_comboscore_df_swapped], ignore_index=True)
 
     nsc_to_mfp = {}
     for line in open(nsc_to_mfp_fp):
@@ -172,7 +186,7 @@ def get_processed_drug_data(
 #   threshold (float) - threshold for variance to remove columns
 # OUTPUT:
 #   df (Pandas dataframe) - dataframe with low variance columns removed
-def remove_low_var_columns(identifier_df, df, intersection_entrez_fn='../data_processed/intersection_entrez_ids.txt', threshold=0):
+def remove_low_var_columns(identifier_df, df, intersection_entrez_fn='data_processed/intersection_entrez_ids.txt', threshold=0):
     intersection_entrez_ids = set()
     with open (intersection_entrez_fn, 'r') as f:
         for line in f:
