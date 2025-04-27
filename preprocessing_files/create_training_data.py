@@ -1,5 +1,5 @@
-from string_preprocessing import *
-from preprocess_data import *
+from preprocessing_files.string_preprocessing import *
+from preprocessing_files.preprocess_data import *
 import pandas as pd
 import torch
 
@@ -11,20 +11,21 @@ import torch
 # INPUT:
 #  None
 # OUTPUT:
-#   nci_almanac_combo_df: pandas dataframe - NCI ALMANAC combo drug data
-#   drug_nsc_to_name: dict - drug NSC ID to drug name
+#   almcomb_combo_df: pandas dataframe - NCI ALMANAC comboscore drug data
+#   almcomb_pg_df: pandas dataframe - NCI ALMANAC percent growth drug data
 #   almanac_cl_name_to_id: dict - cell line name to cell line ID
 def get_drug_data():
-    nci_almanac_combo_df = pd.read_csv("../data_processed/almanac_df.csv")
+    almcomb_combo_df = pd.read_csv("data_processed/almcomb_comboscore_hsa_zip.csv")
+    almcomb_pg_df = pd.read_csv("data_processed/almcomb_concentrations.csv")
     almanac_cl_name_to_id = {}
-    with open("../data_processed/almanac_cell_line_to_id.csv", "r") as f:
+    with open("data_processed/almanac_cell_line_to_id.csv", "r") as f:
         next(f) #skip header
         # for each line, split by comma and add to the dictionary
         for line in f:
             cl_name, cl_id = line.strip().split(",")
             almanac_cl_name_to_id[cl_name] = int(cl_id)
     
-    return nci_almanac_combo_df, almanac_cl_name_to_id
+    return almcomb_combo_df, almcomb_pg_df, almanac_cl_name_to_id
 
 
 # Get the DNA data
@@ -37,13 +38,13 @@ def get_drug_data():
 def get_dna_data():
     dna_cl_names = set()
     dna_identifier_to_entrez = {}
-    dna_cl_to_exome_mut = pd.read_csv("../data_processed/dnaexome_df.csv")
+    dna_cl_to_exome_mut = pd.read_csv("data_processed/dnaexome_df.csv")
 
-    with open("../data_processed/dnaexome_cell_lines.txt", "r") as f:
+    with open("data_processed/dnaexome_cell_lines.txt", "r") as f:
         for line in f:
             dna_cl_names.add(line.strip('\n'))
     
-    with open("../data_processed/dnaexome_identifier_gene_name_entrez_id.csv", "r") as f:
+    with open("data_processed/dnaexome_identifier_gene_name_entrez_id.csv", "r") as f:
         next(f) #skip header
         for line in f:
             identifier, _, entrez_id = line.strip().split(",")
@@ -64,13 +65,13 @@ def get_dna_data():
 def get_rna_data():
     rna_cl_names = set()
     rna_gene_name_to_entrez = {}
-    rna_cl_to_expr = pd.read_csv("../data_processed/rna_df.csv")
+    rna_cl_to_expr = pd.read_csv("data_processed/rna_df.csv")
 
-    with open("../data_processed/rna_cell_lines.txt", "r") as f:
+    with open("data_processed/rna_cell_lines.txt", "r") as f:
         for line in f:
             rna_cl_names.add(line.strip('\n'))
     
-    with open("../data_processed/rna_gene_name_entrez_id.csv", "r") as f:
+    with open("data_processed/rna_gene_name_entrez_id.csv", "r") as f:
         next(f) #skip header
         for line in f:
             gene_name, entrez_id = line.strip().split(",")
@@ -91,13 +92,13 @@ def get_rna_data():
 def get_protein_data():
     protein_cl_names = set()
     protein_identifier_to_entrez = {}
-    protein_cl_to_expr = pd.read_csv("../data_processed/protein_df.csv")
+    protein_cl_to_expr = pd.read_csv("data_processed/protein_df.csv")
 
-    with open("../data_processed/protein_cell_lines.txt", "r") as f:
+    with open("data_processed/protein_cell_lines.txt", "r") as f:
         for line in f:
             protein_cl_names.add(line.strip('\n'))
     
-    with open("../data_processed/protein_identifier_gene_name_entrez_id.csv", "r") as f:
+    with open("data_processed/protein_identifier_gene_name_entrez_id.csv", "r") as f:
         next(f) #skip header
         for line in f:
             identifier, _, entrez_id = line.strip().split(",")
@@ -117,7 +118,7 @@ def get_protein_data():
 #   string_prot_entrez_df: pandas dataframe - dataframe containing STRING protein to entrez ID mapping
 def get_string_data():
     string_interactions_df = get_known_STRING_df()
-    string_prot_entrez_df = pd.read_csv("../data_processed/string_ids_prot_entrez.csv")
+    string_prot_entrez_df = pd.read_csv("data_processed/string_ids_prot_entrez.csv")
     string_entrez_ids = set(string_prot_entrez_df["Entrez_Gene_ID"].unique())
     
     return string_entrez_ids, string_interactions_df, string_prot_entrez_df
@@ -249,6 +250,7 @@ def filter_string_for_intersection(
     return filtered_string
 
 
+# DEPRECATED
 # Get a tensor determining whether it is the first anchor/library drug order or swapped, add to 
 # almanac_df as a new column
 # INPUT:
@@ -290,29 +292,32 @@ def get_swapped_order(
 # INPUT:
 #   None
 # OUTPUT:
-#   filtered_almanac_df: dataframe of drug data
+#   filtered_almcomb_combo_df: dataframe of drug data with comboscores
+#   filtered_almcomb_pg_df: dataframe of drug data with percent growth
 #   filtered_dna_df: dataframe of DNA mutation data
 #   filtered_rna_df: dataframe of RNA expression data
 #   filtered_protein_df: dataframe of protein expression data
+#   filtered_string_df: dataframe of STRING interactions
 #   intersection_entrez_ids: set of entrez ids that are in all datasets
 def get_filtered_data():
     # Get original data
-    almanac_df, almanac_cl_name_to_id = get_drug_data()
+    almcomb_combo_df, almcomb_pg_df, almanac_cl_name_to_id= get_drug_data()
     dna_cl_names, dna_identifier_to_entrez, dna_df = get_dna_data()
     rna_cl_names, rna_gene_name_to_entrez, rna_df = get_rna_data()
     protein_cl_names, protein_identifier_to_entrez, protein_df = get_protein_data()
 
     # Find intersection of cell lines
-    intersection_cl, filtered_almanac_df = find_intersection_of_cell_lines(
+    intersection_cl, filtered_almcomb_combo_df = find_intersection_of_cell_lines(
         set(almanac_cl_name_to_id.keys()),
         dna_cl_names,
         rna_cl_names,
         protein_cl_names,
-        almanac_df
+        almcomb_combo_df
     )
 
-    # Find order of drugs in almanac_df
-    filtered_almanac_df = get_swapped_order(filtered_almanac_df)
+    # Filter the almcomb_combo_df to only include the cell lines in the intersection
+    cell_line_filter = almcomb_pg_df["CELLNAME"].isin(intersection_cl)
+    filtered_almcomb_pg_df = almcomb_pg_df[cell_line_filter]
     
     # Filter cell data by intersection of cell lines
     cl_filt_dna_df = filter_cldf_for_intersection(dna_df, intersection_cl)
@@ -348,24 +353,30 @@ def get_filtered_data():
     filtered_protein = filter_entrezdf_for_intersection(cl_filt_protein_df, protein_identifier_to_entrez, intersection_entrez_ids)
     filtered_string = filter_string_for_intersection(string_interactions_df, intersection_entrez_ids, string_prot_entrez_df)
     
-    # Mean center and scale dna df, rna df, protein df
-
-    # Get the ComboScore for all of the unique drug and cell line pairs
-    filtered_almanac_comboscore_df = filtered_almanac_df.groupby(["CELLNAME", "NSC1", "NSC2", "PANEL"]).agg({"SCORE": "sum"}).reset_index()
+    # Normalize each of the -omic dataframes using z-score normalization
+    dna_cell_lines = filtered_dna.iloc[:, 0]
+    numeric_dna_df = filtered_dna.iloc[:, 1:]
+    normalized_dna_df = (numeric_dna_df - numeric_dna_df.mean(axis=0)) / numeric_dna_df.std(axis=0)
+    filtered_dna = pd.concat([dna_cell_lines, normalized_dna_df], axis=1)
+    # RNA data is already normalized by z-score normalization
+    protein_cell_lines = filtered_protein.iloc[:, 0]
+    numeric_protein_df = filtered_protein.iloc[:, 1:]
+    normalized_protein_df = (numeric_protein_df - numeric_protein_df.mean(axis=0)) / numeric_protein_df.std(axis=0)
+    filtered_protein = pd.concat([protein_cell_lines, normalized_protein_df], axis=1)
 
     # Save filtered data, figure out indices
-    filtered_almanac_df.to_csv("../data_processed/filtered_almanac_df.csv", index=False)
-    filtered_dna.to_csv("../data_processed/filtered_dna_df.csv", index=False)
-    filtered_rna.to_csv("../data_processed/filtered_rna_df.csv", index=False)
-    filtered_protein.to_csv("../data_processed/filtered_protein_df.csv", index=False)
-    filtered_string.to_csv("../data_processed/filtered_string_df.csv", index=False)
-    filtered_almanac_comboscore_df.to_csv("../data_processed/filtered_almanac_comboscore_df.csv", index=False)
+    filtered_almcomb_pg_df.to_csv("data_processed/filtered_almcomb_pg_df.csv", index=False)
+    filtered_almcomb_combo_df.to_csv("data_processed/filtered_almcomb_combo.csv", index=False)
+    filtered_dna.to_csv("data_processed/filtered_dna_df.csv", index=False)
+    filtered_rna.to_csv("data_processed/filtered_rna_df.csv", index=False)
+    filtered_protein.to_csv("data_processed/filtered_protein_df.csv", index=False)
+    filtered_string.to_csv("data_processed/filtered_string_df.csv", index=False)
 
-    with open("../data_processed/intersection_entrez_ids.txt", "w") as fp:
+    with open("data_processed/intersection_entrez_ids.txt", "w") as fp:
         for entrez_id in intersection_entrez_ids:
             fp.write(str(entrez_id) + "\n")
 
-    return filtered_almanac_df, filtered_dna, filtered_rna, filtered_protein, filtered_string, intersection_entrez_ids
+    return filtered_almcomb_combo_df, filtered_almcomb_pg_df, filtered_dna, filtered_rna, filtered_protein, filtered_string, intersection_entrez_ids
 
 
 # Split the data up by cancer type
@@ -389,7 +400,7 @@ def split_data_by_cancer_type(
     # Save each cancer type dataframe to different file
     for cancer_type in cancer_type_to_df:
         output_ct = cancer_type.lower().replace(" ", "_")
-        cancer_type_to_df[cancer_type].to_csv("../data_processed/almanac_by_cancertype/filtered_almanac_df_" + output_ct + ".csv", index=False)
+        cancer_type_to_df[cancer_type].to_csv("data_processed/almanac_by_cancertype/filtered_almanac_df_" + output_ct + ".csv", index=False)
 
     return cancer_type_to_df
 
