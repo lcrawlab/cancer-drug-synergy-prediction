@@ -34,7 +34,7 @@ We also ensured the genes present in the dataset belong to the STRING protein-pr
 ## Generating the dataset CSV files - `dataset_creation/` ##
 1. Create the morgan fingerprint only CSV files by running `create_mfp_csv.ipynb`
 2. Create the -omics identifiers and PCNNGL mask CSV files by running `create_omics_csv_identifiers_masks.ipynb`
-3. Create the tissue type and drug class type indices files and the MFP+Omics CSV dataset files by running `create_omics_csv.ipynb`
+3. Create the tissue type and drug class type indices files and the MFP+Omics H5 dataset files by running `create_omics_csv.ipynb`
 
 ## Run the Models - `models/` ##
 1. Model parameter implementations are present in the `models/src` directory
