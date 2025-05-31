@@ -2,6 +2,7 @@
 data/
 env/
 figures/
+grid_experiment_sh_scripts/
 
 # ignore the following files
 .DS_Store
