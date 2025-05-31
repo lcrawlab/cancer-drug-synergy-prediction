@@ -136,7 +136,7 @@ if __name__ == '__main__':
     # flatten y
     y = np.ndarray.flatten(y)
 
-    kf = KFold(n_splits=args.folds, shuffle=True)
+    kf = KFold(n_splits=args.folds, shuffle=True, random_state=42) # Set random_state for reproducibility
     all_fold_metrics = pd.DataFrame()
     if args.use_bc:
         all_fold_metrics = pd.DataFrame(columns=['Accuracy', 'Sensitivity', 'Specificity', 'Precision', 'F1 Score', 'MCC', 'AUC', 'Kappa'])
