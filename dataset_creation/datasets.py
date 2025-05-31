@@ -63,6 +63,7 @@ class H5Dataset(Dataset):
         self._process_dataframe()
 
         self.n_samples = len(self.x)
+        self.num_features = self._calculate_feature_dimensions()
 
     def _get_subset_indices(self):
         # Get the indices for the cancer type
@@ -101,6 +102,9 @@ class H5Dataset(Dataset):
         # Note: Concentration features only apply to PERCENT_GROWTH
         if self.target_column == 'PERCENT_GROWTH':
             total_features += 2     # CONC1, CONC2
+
+        self.num_features = total_features
+        print(f"Total feature dimensions: {total_features}")
             
         return total_features
     
@@ -108,7 +112,7 @@ class H5Dataset(Dataset):
         # Load the index mapping from the H5 file
         with h5py.File(self.h5_path, 'r') as f:
             nscs = f['drug_mfp']['nscs'][:]
-            nscs = [nsc.decode('utf-8') for nsc in nscs]
+            nscs = [int(nsc.decode('utf-8')) for nsc in nscs]
             self.nsc_to_idx = {nsc: i for i, nsc in enumerate(nscs)}
 
             self.cell_lines_dna = [cl.decode('utf-8') for cl in f['dna']['cell_lines'][:]]
@@ -227,10 +231,12 @@ class H5Dataset(Dataset):
         self.y = torch.from_numpy(y).unsqueeze(1)
         
         print(f"Created feature matrix of shape {self.x.shape}")
-        print(f"Feature layout: Drug1_MFP(256) + Drug1_CONC(1) + Drug2_MFP(256) + Drug2_CONC(1) + Cell_Features" if self.use_mfp and self.target_column == 'PERCENT_GROWTH' else 
-              f"Feature layout: Drug1_MFP(256) + Drug2_MFP(256) + Cell_Features" if self.use_mfp else 
-              "Feature layout: Cell_Features only")
 
+    def __getitem__(self, index):
+        return self.x[index], self.y[index]
+
+    def __len__(self):
+        return self.n_samples
 
 
 # Deprecated version of dataset creation
@@ -285,8 +291,6 @@ class MorganFingerprintDataset(Dataset):
 '''
 
 
-# Deprecated version of splitting the data
-'''
 # Split data into train, tune, and test sets
 # INPUT:
 #   ds: torch.utils.data.Dataset
@@ -314,7 +318,6 @@ def split_data(ds, train_size=0.8, tune_size=0.1, test_size=0.1, random_state=42
     print('Test size:', len(test_subset))
 
     return train_subset, tune_subset, test_subset
-'''
 
 # Deprecated version of getting the filename for the all cancer dataset
 '''

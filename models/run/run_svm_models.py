@@ -115,6 +115,7 @@ if __name__ == '__main__':
     args.add_argument('--use_dna', action='store_true', help='Use DNA SNP data')
     args.add_argument('--use_rna', action='store_true', help='Use RNA expression data')
     args.add_argument('--use_prot', action='store_true', help='Use protein expression data')
+    args.add_argument('--score', type=str, default='COMBOSCORE', help='Score to use for prediction task')
     args.add_argument('--use_bc', action='store_true', help='Use binary comboscore for prediction task')
     args.add_argument('--use_csreg', action='store_true', help='Use regression on comboscore for prediction task')
     args.add_argument('--use_pgreg', action='store_true', help='Use regression on percentage growth for prediction task')
@@ -127,6 +128,10 @@ if __name__ == '__main__':
     args = args.parse_args()
 
     # Error check
+    if args.score not in ['COMBOSCORE', 'ZIP', 'HSA']:
+        raise ValueError('Score should be one of COMBOSCORE, ZIP, HSA')
+    if args.score != 'COMBOSCORE' and args.use_pgreg:
+        raise ValueError('Cannot use percent growth regression if score is not COMBOSCORE')
     if args.use_mfp and args.mfp_len == 0:
         raise ValueError('Must specify mfp length if using mfp')
     if not (args.use_mfp or args.use_dna or args.use_rna or args.use_prot):
