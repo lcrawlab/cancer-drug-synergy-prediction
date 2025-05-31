@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Dataset, Subset
 # INPUT:
 #   h5_path: str - path to the h5 file with the Morgan fingerprints, DNA, RNA, and protein features
 #   data_path: str - path to the csv file with the data
-#   target_column: str - the column name for the target variable (e.g. 'COMBOSCORE', 'PERCENT_GROWTH', 'ZIP', or 'HSA')
+#   target_column: str - the column name for the target variable (e.g. 'COMBOSCORE', 'PERCENTGROWTH', 'ZIP', or 'HSA')
 #   binary_classification: bool - whether to convert the target variable to binary
 #   balance_classes: bool - whether to balance the classes for binary classification
 #   cancer_type: str - the cancer type to filter the dataset by (e.g. 'breast', 'cns', 'colon', 'leukemia', 'melanoma', 'nsclc', 'ovarian', 'prostate', 'renal')
@@ -29,8 +29,10 @@ class H5Dataset(Dataset):
             raise ValueError('Cannot balance classes if not binary classification')
         if not (use_mfp or use_dna or use_rna or use_prot):
             raise ValueError('Must use at least one omics layer')
-        if target_column not in ['COMBOSCORE', 'PERCENT_GROWTH', 'ZIP', 'HSA']:
+        if target_column not in ['COMBOSCORE', 'PERCENTGROWTH', 'ZIP', 'HSA']:
             raise ValueError('target_column should be one of COMBOSCORE, PERCENTGROWTH, ZIP, or HSA')
+        if target_column == 'PERCENTGROWTH' and binary_classification:
+            raise ValueError('Cannot use binary classification on PERCENTGROWTH')
         if cancer_type not in ['all_cancer', 'breast', 'cns', 'colon', 'leukemia', 'melanoma', 'nsclc', 'ovarian', 'prostate', 'renal']:
             raise ValueError('cancer_type should be one of all_cancer, breast, cns, colon, leukemia, melanoma, nsclc, ovarian, prostate, renal')
         if drug_class not in ['all_drugs', 'chemo_chemo', 'chemo_targeted', 'chemo_other', 'targeted_targeted', 'targeted_other', 'other_other']:
@@ -68,13 +70,13 @@ class H5Dataset(Dataset):
     def _get_subset_indices(self):
         # Get the indices for the cancer type
         cancer_type_indices_fp = 'data/ASP_dataset_slices/'+ self.cancer_type
-        if self.target_column == 'PERCENT_GROWTH':
+        if self.target_column == 'PERCENTGROWTH':
             cancer_type_indices_fp += '_pg_indices.txt'
         else:
             cancer_type_indices_fp += '_comboscore_indices.txt'
         
         drug_class_indices_fp = 'data/ASP_dataset_slices/all_cancer_' + self.drug_class
-        if self.target_column == 'PERCENT_GROWTH':
+        if self.target_column == 'PERCENTGROWTH':
             drug_class_indices_fp += '_pg_indices.txt'
         else:
             drug_class_indices_fp += '_cs_indices.txt'
@@ -99,8 +101,8 @@ class H5Dataset(Dataset):
         if self.use_prot:
             total_features += 786
         
-        # Note: Concentration features only apply to PERCENT_GROWTH
-        if self.target_column == 'PERCENT_GROWTH':
+        # Note: Concentration features only apply to PERCENTGROWTH
+        if self.target_column == 'PERCENTGROWTH':
             total_features += 2     # CONC1, CONC2
 
         self.num_features = total_features
@@ -128,7 +130,7 @@ class H5Dataset(Dataset):
 
         # Load the data from the CSV file
         # Should be 'data/ASP_dataset_slices/drug_comboscore_hsa_zip.csv'
-        # or 'data/ASP_dataset_slices/drug_percent_growth.csv'
+        # or 'data/ASP_dataset_slices/drug_PERCENTGROWTH.csv'
         data_df = pd.read_csv(self.data_path)
         # Check if the target column is in the dataframe
         if self.target_column not in data_df.columns:
@@ -154,8 +156,8 @@ class H5Dataset(Dataset):
 
         # Check if need to convert to binary classification and balance classes
         if self.binary_classification:
-            if self.target_column == 'PERCENT_GROWTH':
-                raise ValueError('Did not use PERCENT_GROWTH for binary classification')
+            if self.target_column == 'PERCENTGROWTH':
+                raise ValueError('Did not use PERCENTGROWTH for binary classification')
             y = (y > 0).astype(np.float32)
             if self.balance_classes:
                 print('Initial dataset size:', n_samples_og)
@@ -200,8 +202,8 @@ class H5Dataset(Dataset):
             X[:, feature_idx:feature_idx+256] = mfp_data[drug1_indices]
             feature_idx += 256
             
-            # Drug 1 concentration (if PERCENT_GROWTH)
-            if self.target_column == 'PERCENT_GROWTH':
+            # Drug 1 concentration (if PERCENTGROWTH)
+            if self.target_column == 'PERCENTGROWTH':
                 X[:, feature_idx] = data_df['CONC1'].values
                 feature_idx += 1
             
@@ -209,8 +211,8 @@ class H5Dataset(Dataset):
             X[:, feature_idx:feature_idx+256] = mfp_data[drug2_indices]
             feature_idx += 256
             
-            # Drug 2 concentration (if PERCENT_GROWTH)
-            if self.target_column == 'PERCENT_GROWTH':
+            # Drug 2 concentration (if PERCENTGROWTH)
+            if self.target_column == 'PERCENTGROWTH':
                 X[:, feature_idx] = data_df['CONC2'].values
                 feature_idx += 1
         
