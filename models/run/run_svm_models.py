@@ -134,6 +134,8 @@ if __name__ == '__main__':
         raise ValueError('Must use percent growth regression if using PERCENTGROWTH score')
     if args.score == 'PERCENTGROWTH' and args.use_bc:
         raise ValueError('Cannot use binary classification if score is PERCENTGROWTH')
+    if args.use_pgreg and args.score != 'PERCENTGROWTH':
+        raise ValueError('Must use PERCENTGROWTH score if using percent growth regression')
     if args.use_mfp and args.mfp_len == 0:
         raise ValueError('Must specify mfp length if using mfp')
     if not (args.use_mfp or args.use_dna or args.use_rna or args.use_prot):
