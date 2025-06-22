@@ -162,7 +162,7 @@ if __name__ == '__main__':
     # Get the filename
     h5_path = 'data/ASP_dataset_slices/all_256mfpdnarnaprot.h5'
     non_pg_data_path = 'data/ASP_dataset_slices/drug_comboscore_hsa_zip.csv'
-    pg_data_path = 'data/ASP_dataset_slices/drug_percentgrowth.csv'
+    pg_data_path = 'data/ASP_dataset_slices/drug_percent_growth.csv'
 
     if args.use_pgreg:
         data_path = pg_data_path
