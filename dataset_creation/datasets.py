@@ -144,9 +144,14 @@ class H5Dataset(Dataset):
             if self.drug_class_indices is None:
                 raise ValueError('drug_class_indices is None')
             data_df = data_df.iloc[self.drug_class_indices].reset_index(drop=True)
+        # Check if the target column has NaN values
+        if data_df[self.target_column].isnull().any():
+            # Filter out rows with NaN in the target column and print a new shape
+            print(f'Found NaN values in {self.target_column}, filtering them out')
+            data_df = data_df.dropna(axis='index', subset=[self.target_column]).reset_index(drop=True)
         # Check if the dataframe is empty
         if data_df.empty:
-            raise ValueError('Dataframe is empty after filtering by cancer type or drug class')
+            raise ValueError('Dataframe is empty after filtering by cancer type, drug class, or NaN values')
         
         n_samples_og = len(data_df)
         y = np.zeros(n_samples_og, dtype=np.float32)
