@@ -2,7 +2,7 @@
 data/
 env/
 figures/
-grid_experiment_sh_scripts/
+# grid_experiment_sh_scripts/ - UNPUBLISH THIS LATER
 
 # ignore the following files
 .DS_Store
