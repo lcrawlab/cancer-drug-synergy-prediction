@@ -9,7 +9,7 @@
 #SBATCH -c 4                                                #number of cores
 
 #SBATCH -t 60:00:00                                         #time limit (HH:MM:SS)
-#SBATCH --mem=350G                                          #memory per node
+#SBATCH --mem=800G                                          #memory per node
 
 #SBATCH --array=1                                         #job array
 
