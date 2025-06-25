@@ -64,14 +64,14 @@ def fit_svm_reg_model(X_train, y_train):
     model = SVMModelRegression()
 
     # On large datasets, the SVM model says the value is too large to convert to numpy_int32
-    # So let's split up the data into 5 chunks and train on each chunk
+    # So let's split up the data into 25 chunks and train on each chunk
     # This is a workaround for the issue
-    # Split the data into 5 chunks
-    chunk_size = int(len(X_train) / 5)
-    for i in range(5):
+    # Split the data into 25 chunks
+    chunk_size = int(len(X_train) / 25)
+    for i in range(25):
         start = i * chunk_size
         end = (i + 1) * chunk_size
-        if i == 4:
+        if i == 24:
             end = len(X_train)
         model.fit(X_train[start:end], y_train[start:end])
         print(f"Model trained on chunk {i}")
