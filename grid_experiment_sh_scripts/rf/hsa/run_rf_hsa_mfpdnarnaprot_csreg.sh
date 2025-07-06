@@ -4,12 +4,12 @@
 #SBATCH --mail-user=alexandra_wong@brown.edu                #email address
 #SBATCH -J 20250629_hsa_mfpdnarnaprot_rf_csreg_experiment      #job name
 
-#SBATCH --partition=batch                                  #partition
+#SBATCH --partition=bigmem                                  #partition
 #SBATCH -N 1                                                #number of nodes
-#SBATCH -c 2                                                #number of cores
+#SBATCH -c 11                                                #number of cores
 
 #SBATCH -t 96:00:00                                         #time limit (HH:MM:SS)
-#SBATCH --mem=80G                                          #memory per node
+#SBATCH --mem=800G                                          #memory per node
 
 #SBATCH --array=1                                         #job array
 

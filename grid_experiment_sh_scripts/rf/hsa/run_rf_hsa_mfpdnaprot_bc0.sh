@@ -6,10 +6,10 @@
 
 #SBATCH --partition=batch                                  #partition
 #SBATCH -N 1                                                #number of nodes
-#SBATCH -c 2                                                #number of cores
+#SBATCH -c 11                                                #number of cores
 
-#SBATCH -t 96:00:00                                         #time limit (HH:MM:SS)
-#SBATCH --mem=60G                                          #memory per node
+#SBATCH -t 48:00:00                                         #time limit (HH:MM:SS)
+#SBATCH --mem=440G                                          #memory per node
 
 #SBATCH --array=1                                         #job array
 

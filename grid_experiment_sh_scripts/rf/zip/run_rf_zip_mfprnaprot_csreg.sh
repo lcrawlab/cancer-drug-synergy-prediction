@@ -6,10 +6,10 @@
 
 #SBATCH --partition=batch                                  #partition
 #SBATCH -N 1                                                #number of nodes
-#SBATCH -c 2                                                #number of cores
+#SBATCH -c 11                                              #number of cores
 
 #SBATCH -t 96:00:00                                         #time limit (HH:MM:SS)
-#SBATCH --mem=80G                                          #memory per node
+#SBATCH --mem=220G                                          #memory per node
 
 #SBATCH --array=1                                         #job array
 
@@ -18,9 +18,9 @@
 #SBATCH --error=scratch/anticancer-synergy-prediction-scratch/experiments/20250629_zip_rf/mfprnaprot_rf_csreg_%a_slurm.err            #error file
 
 source env/bin/activate
-
-SCRATCH="scratch/anticancer-synergy-prediction-scratch/"
 export PYTHONPATH="${PYTHONPATH}:~/cancer-drug-synergy-prediction/"
+SCRATCH="scratch/anticancer-synergy-prediction-scratch/"
+
 PYOF=$SCRATCH"experiments/20250629_zip_rf/mfprnaprot_rf_csreg"$SLURM_ARRAY_TASK_ID".txt"
 PLOT=$SCRATCH"experiments/20250629_zip_rf/mfprnaprot_rf_csreg"
 
