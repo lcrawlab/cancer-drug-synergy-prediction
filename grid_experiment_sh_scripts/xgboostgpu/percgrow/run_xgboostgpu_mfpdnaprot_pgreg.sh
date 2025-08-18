@@ -28,5 +28,5 @@ PLOT=$SCRATCH"experiments/20250712_pg_xgboostgpu/mfpdnaprot_xgboostgpu_pgreg"
 # Run hyperparameter experiments using job array index to select hyperparameters in the vnn_experiments_oscar.py script
 # REMEMBER TO INDEX BY 1
 echo "Starting job $SLURM_ARRAY_TASK_ID on $HOSTNAME starting on `date`"
-python3 models/run/run_xgboostgpu_models.py --score 'PERCENTGROWTH'--use_mfp --use_dna --use_prot --use_pgreg --output_fp $PLOT"metrics.csv" > $PYOF
+python3 models/run/run_xgboostgpu_models.py --score 'PERCENTGROWTH' --use_mfp --use_dna --use_prot --use_pgreg --output_fp $PLOT"metrics.csv" > $PYOF
 echo "Job $SLURM_ARRAY_TASK_ID ended at `date`"
