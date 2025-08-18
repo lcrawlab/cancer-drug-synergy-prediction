@@ -155,8 +155,8 @@ if __name__ == '__main__':
         use_prot=args.use_prot,
     )
     
-    X = data.x.detach().cpu().numpy().astype(np.float32)
-    y = data.y.detach().cpu().numpy().astype(np.float32)
+    X = data.x.detach().cuda()
+    y = data.y.detach().cuda()
     # flatten y
     y = np.ndarray.flatten(y)
 

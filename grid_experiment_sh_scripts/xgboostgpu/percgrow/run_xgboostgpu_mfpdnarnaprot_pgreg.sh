@@ -7,10 +7,10 @@
 #SBATCH --partition=gpu                                  #partition
 #SBATCH --gres=gpu:1                                       #request GPU
 #SBATCH -N 1                                                #number of nodes
-#SBATCH -c 4                                                #number of cores
+#SBATCH -c 1                                                #number of cores
 
-#SBATCH -t 4:00:00                                         #time limit (HH:MM:SS)
-#SBATCH --mem=400G                                          #memory per node
+#SBATCH -t 10:00:00                                         #time limit (HH:MM:SS)
+#SBATCH --mem=300G                                          #memory per node
 
 #SBATCH --array=1                                         #job array
 
