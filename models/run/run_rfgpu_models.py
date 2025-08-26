@@ -219,8 +219,10 @@ if __name__ == '__main__':
         use_prot=args.use_prot,
     )
     
-    X = data.x.numpy()
-    y = data.y.numpy()
+    X = data.x.detach().cpu().numpy().astype(np.float32)
+    y = data.y.detach().cpu().numpy().astype(np.float32)
+    # flatten y
+    y = np.ndarray.flatten(y)
 
     kf = KFold(n_splits=args.folds, shuffle=True, random_state=42) # Set random_state for reproducibility
     all_fold_metrics = pd.DataFrame()
