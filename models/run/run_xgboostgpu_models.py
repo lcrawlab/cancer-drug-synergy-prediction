@@ -11,8 +11,8 @@ from sklearn.metrics import *
 
 # Fit the GPU XGBoost model for binary classification
 # INPUT:
-#   X_train: np.ndarray
-#   y_train: np.ndarray
+#   X_train: np.ndarray #TODO: change to torch tensor?
+#   y_train: np.ndarray #TODO: change to torch tensor?
 # OUTPUT:
 #   model: GPUXGBoostModelBC
 def fit_xgboostgpu_bc_model(X_train, y_train):
@@ -26,8 +26,8 @@ def fit_xgboostgpu_bc_model(X_train, y_train):
 # Evaluate the GPU XGBoost model for binary classification
 # INPUT:
 #   model: GPUXGBoostModelBC
-#   X_test: np.ndarray
-#   y_test: np.ndarray
+#   X_test: np.ndarray #TODO: change to torch tensor?
+#   y_test: np.ndarray #TODO: change to torch tensor?
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
@@ -47,8 +47,8 @@ def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
 
 # Fit the GPU XGBoost model for regression on comboscore or percent growth
 # INPUT:
-#   X_train: np.ndarray
-#   y_train: np.ndarray
+#   X_train: np.ndarray #TODO: change to torch tensor?
+#   y_train: np.ndarray #TODO: change to torch tensor?
 # OUTPUT:
 #   model: GPUXGBoostModelRegression
 def fit_xgboostgpu_reg_model(X_train, y_train):
@@ -62,8 +62,8 @@ def fit_xgboostgpu_reg_model(X_train, y_train):
 # Evaluate the GPU XGBoost model for regression on comboscore or percent growth
 # INPUT:
 #   model: GPUXGBoostModelRegression
-#   X_test: np.ndarray
-#   y_test: np.ndarray
+#   X_test: np.ndarray #TODO: change to torch tensor?
+#   y_test: np.ndarray #TODO: change to torch tensor?
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_reg_model(model, X_test, y_test):
@@ -156,10 +156,8 @@ if __name__ == '__main__':
         device='cuda',  # Use GPU
     )
     
-    X = data.x.detach().numpy().astype(np.float32)
-    y = data.y.detach().numpy().astype(np.float32)
-    # flatten y
-    y = np.ndarray.flatten(y)
+    X = data.x
+    y = torch.flatten(data.y)
 
     kf = KFold(n_splits=args.folds, shuffle=True, random_state=42) # Set random_state for reproducibility
     all_fold_metrics = pd.DataFrame()
@@ -168,10 +166,31 @@ if __name__ == '__main__':
     elif args.use_csreg or args.use_pgreg:
         all_fold_metrics = pd.DataFrame(columns=['MSE', 'RMSE', 'MAE', 'R2', 'Pearson', 'Spearman'])
     
-    for i, (train_index, test_index) in enumerate(kf.split(X)):
+    #FOR DEBUGGING
+    train_indices_already_done = set()
+    test_indices_already_done = set()
+    for i, (train_index, test_index) in enumerate(kf.split(range(data.n_samples))):
         print(f"Fold {i+1}")
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
+        train_idx_list = train_index.tolist()
+        test_idx_list = test_index.tolist()
+        X_train, X_test = X[train_idx_list], X[test_idx_list]
+        y_train, y_test = y[train_idx_list], y[test_idx_list]
+
+        # FOR DEBUGGING
+        # are there any overlapping indices between indices already done and current indices?
+        overlap_train = train_indices_already_done.intersection(set(train_idx_list))
+        overlap_test = test_indices_already_done.intersection(set(test_idx_list))
+        if len(overlap_train) > 0:
+            raise ValueError(f"Overlap in training indices for fold {i+1}: {overlap_train}")
+        if len(overlap_test) > 0:
+            raise ValueError(f"Overlap in testing indices for fold {i+1}: {overlap_test}")
+        train_indices_already_done.update(train_idx_list)
+        test_indices_already_done.update(test_idx_list)
+        print(f"Train indices done so far: {len(train_indices_already_done)}")
+        print(f"Test indices done so far: {len(test_indices_already_done)}")
+        print(f"Train indices this fold: {len(train_idx_list)}")
+        print(f"Test indices this fold: {len(test_idx_list)}")
+        # END FOR DEBUGGING
 
         # Fit the model and evaluate
         model = None
