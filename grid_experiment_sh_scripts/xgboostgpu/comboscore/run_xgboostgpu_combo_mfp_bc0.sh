@@ -18,6 +18,7 @@
 #SBATCH --output=scratch/anticancer-synergy-prediction-scratch/experiments/20250712_combo_xgboostgpu/mfp_xgboostgpu_bc_%a_slurm.out           #output file
 #SBATCH --error=scratch/anticancer-synergy-prediction-scratch/experiments/20250712_combo_xgboostgpu/mfp_xgboostgpu_bc_%a_slurm.err            #error file
 
+nvidia-smi
 source env/bin/activate
 
 SCRATCH="scratch/anticancer-synergy-prediction-scratch/"

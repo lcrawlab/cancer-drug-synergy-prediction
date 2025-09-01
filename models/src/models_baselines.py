@@ -12,7 +12,7 @@ class GPUXGBoostModelBC(nn.Module):
     def __init__(self, max_depth=7, learning_rate=0.1, n_estimators=100):
         super(GPUXGBoostModelBC, self).__init__()
         use_cuda = torch.cuda.is_available()
-        self.device = torch.device("cuda:0" if use_cuda else "cpu")
+        self.device = "cuda" if use_cuda else "cpu"
         self.max_depth = max_depth
         self.learning_rate = learning_rate
         self.n_estimators = n_estimators
@@ -40,7 +40,7 @@ class GPUXGBoostModelRegression(nn.Module):
     def __init__(self, max_depth=7, learning_rate=0.1, n_estimators=100):
         super(GPUXGBoostModelRegression, self).__init__()
         use_cuda = torch.cuda.is_available()
-        self.device = torch.device("cuda:0" if use_cuda else "cpu")
+        self.device = "cuda" if use_cuda else "cpu"
         self.max_depth = max_depth
         self.learning_rate = learning_rate
         self.n_estimators = n_estimators
