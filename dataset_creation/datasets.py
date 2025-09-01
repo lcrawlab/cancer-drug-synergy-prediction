@@ -24,7 +24,7 @@ class H5Dataset(Dataset):
 
     def __init__(self, h5_path, data_path, target_column, binary_classification=False, balance_classes=False,
                  cancer_type='all_cancer', drug_class='all_drugs',  # Optional parameters for filtering
-                 use_mfp=True, use_dna=True, use_rna=True, use_prot=True):
+                 use_mfp=True, use_dna=True, use_rna=True, use_prot=True, device='cpu'):
         if not binary_classification and balance_classes:
             raise ValueError('Cannot balance classes if not binary classification')
         if not (use_mfp or use_dna or use_rna or use_prot):
@@ -39,6 +39,8 @@ class H5Dataset(Dataset):
             raise ValueError('drug_class should be one of all_drugs, chemo_chemo, chemo_targeted, chemo_other, targeted_targeted, targeted_other, other_other')
         if cancer_type != 'all_cancer' and drug_class != 'all_drugs':
             raise ValueError('Can only filter by one of cancer_type or drug_class')
+        if device not in ['cpu', 'cuda']:
+            raise ValueError("device should be 'cpu' or 'cuda'")
         
         self.h5_path = h5_path
         self.data_path = data_path
@@ -53,6 +55,7 @@ class H5Dataset(Dataset):
         self.use_dna = use_dna
         self.use_rna = use_rna
         self.use_prot = use_prot
+        self.device = device
 
         # Get the indices for the cancer type and drug class
         if self.cancer_type != 'all_cancer' or self.drug_class != 'all_drugs':
@@ -234,9 +237,9 @@ class H5Dataset(Dataset):
             feature_idx += 786
         
         # Convert to torch tensors
-        self.x = torch.from_numpy(X)
-        self.y = torch.from_numpy(y).unsqueeze(1)
-        
+        self.x = torch.from_numpy(X).to(self.device)
+        self.y = torch.from_numpy(y).unsqueeze(1).to(self.device)
+
         print(f"Created feature matrix of shape {self.x.shape}")
 
     def __getitem__(self, index):

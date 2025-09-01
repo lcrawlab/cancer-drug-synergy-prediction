@@ -153,6 +153,7 @@ if __name__ == '__main__':
         use_dna=args.use_dna,
         use_rna=args.use_rna,
         use_prot=args.use_prot,
+        device='cuda',  # Use GPU
     )
     
     X = data.x.detach().numpy().astype(np.float32)
