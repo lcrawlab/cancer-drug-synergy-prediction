@@ -159,7 +159,7 @@ if __name__ == '__main__':
         use_dna=args.use_dna,
         use_rna=args.use_rna,
         use_prot=args.use_prot,
-        device='cuda',  # Use GPU
+        #device='cuda',  # Use GPU
     )
     
     X = data.x
@@ -178,6 +178,12 @@ if __name__ == '__main__':
         test_idx_list = test_index.tolist()
         X_train, X_test = X[train_idx_list], X[test_idx_list]
         y_train, y_test = y[train_idx_list], y[test_idx_list]
+
+        # Move to GPU
+        X_train = X_train.to('cuda')
+        y_train = y_train.to('cuda')
+        X_test = X_test.to('cuda')
+        y_test = y_test.to('cuda')
 
         # Fit the model and evaluate
         model = None
