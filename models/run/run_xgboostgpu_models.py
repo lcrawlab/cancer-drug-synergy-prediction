@@ -11,8 +11,8 @@ from sklearn.metrics import *
 
 # Fit the GPU XGBoost model for binary classification
 # INPUT:
-#   X_train: np.ndarray #TODO: change to torch tensor?
-#   y_train: np.ndarray #TODO: change to torch tensor?
+#   X_train: Torch tensor
+#   y_train: Torch tensor
 # OUTPUT:
 #   model: GPUXGBoostModelBC
 def fit_xgboostgpu_bc_model(X_train, y_train):
@@ -26,8 +26,8 @@ def fit_xgboostgpu_bc_model(X_train, y_train):
 # Evaluate the GPU XGBoost model for binary classification
 # INPUT:
 #   model: GPUXGBoostModelBC
-#   X_test: np.ndarray #TODO: change to torch tensor?
-#   y_test: np.ndarray #TODO: change to torch tensor?
+#   X_test: Torch tensor
+#   y_test: Torch tensor
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
@@ -50,8 +50,8 @@ def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
 
 # Fit the GPU XGBoost model for regression on comboscore or percent growth
 # INPUT:
-#   X_train: np.ndarray #TODO: change to torch tensor?
-#   y_train: np.ndarray #TODO: change to torch tensor?
+#   X_train: Torch tensor
+#   y_train: Torch tensor
 # OUTPUT:
 #   model: GPUXGBoostModelRegression
 def fit_xgboostgpu_reg_model(X_train, y_train):
@@ -65,8 +65,8 @@ def fit_xgboostgpu_reg_model(X_train, y_train):
 # Evaluate the GPU XGBoost model for regression on comboscore or percent growth
 # INPUT:
 #   model: GPUXGBoostModelRegression
-#   X_test: np.ndarray #TODO: change to torch tensor?
-#   y_test: np.ndarray #TODO: change to torch tensor?
+#   X_test: Torch tensor
+#   y_test: Torch tensor
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_reg_model(model, X_test, y_test):
@@ -75,7 +75,7 @@ def evaluate_xgboostgpu_reg_model(model, X_test, y_test):
 
     y_test = y_test.cpu().numpy()
     y_test = np.ndarray.flatten(y_test)
-    
+
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
     mae = mean_absolute_error(y_test, y_pred)
@@ -171,24 +171,13 @@ if __name__ == '__main__':
         all_fold_metrics = pd.DataFrame(columns=['Accuracy', 'Sensitivity', 'Specificity', 'Precision', 'F1 Score', 'MCC', 'AUC', 'Kappa'])
     elif args.use_csreg or args.use_pgreg:
         all_fold_metrics = pd.DataFrame(columns=['MSE', 'RMSE', 'MAE', 'R2', 'Pearson', 'Spearman'])
-    
-    #FOR DEBUGGING
-    test_indices_already_done = set()
+
     for i, (train_index, test_index) in enumerate(kf.split(range(data.n_samples))):
         print(f"Fold {i+1}")
         train_idx_list = train_index.tolist()
         test_idx_list = test_index.tolist()
         X_train, X_test = X[train_idx_list], X[test_idx_list]
         y_train, y_test = y[train_idx_list], y[test_idx_list]
-
-        # FOR DEBUGGING
-        # are there any overlapping indices between indices already done and current indices?
-        overlap_test = test_indices_already_done.intersection(set(test_idx_list))
-        if len(overlap_test) > 0:
-            raise ValueError(f"Overlap in testing indices for fold {i+1}: {overlap_test}")
-        test_indices_already_done.update(test_idx_list)
-        print(f"Intersection of test indices with previously done test indices: {overlap_test}")
-        # END FOR DEBUGGING
 
         # Fit the model and evaluate
         model = None
