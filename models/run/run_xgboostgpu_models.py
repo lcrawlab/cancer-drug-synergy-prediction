@@ -34,7 +34,6 @@ def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
     # Evaluation
     y_pred = model.predict(X_test)
 
-    y_pred = y_pred.cpu().numpy()
     y_test = y_test.cpu().numpy()
 
     accuracy = accuracy_score(y_test, y_pred)
@@ -72,11 +71,11 @@ def fit_xgboostgpu_reg_model(X_train, y_train):
 #   fold_metrics: list
 def evaluate_xgboostgpu_reg_model(model, X_test, y_test):
     # Evaluation
-    y_pred = model.predict(X_test)
-    y_pred = y_pred.cpu().numpy()
+    y_pred = np.ndarray.flatten(model.predict(X_test))
+
     y_test = y_test.cpu().numpy()
-    y_pred = np.ndarray.flatten(y_pred)
     y_test = np.ndarray.flatten(y_test)
+    
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
     mae = mean_absolute_error(y_test, y_pred)
