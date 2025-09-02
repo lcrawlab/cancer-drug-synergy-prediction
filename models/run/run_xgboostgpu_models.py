@@ -31,13 +31,12 @@ def fit_xgboostgpu_bc_model(X_train, y_train):
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
-    # Change to np arrays if needed
-    if isinstance(X_test, torch.Tensor):
-        X_test = X_test.cpu().numpy()
-    if isinstance(y_test, torch.Tensor):
-        y_test = y_test.cpu().numpy()
     # Evaluation
     y_pred = model.predict(X_test)
+
+    y_pred = y_pred.cpu().numpy()
+    y_test = y_test.cpu().numpy()
+
     accuracy = accuracy_score(y_test, y_pred)
     sensitivity = recall_score(y_test, y_pred)
     specificity = recall_score(y_test, y_pred, pos_label=0)
@@ -72,13 +71,11 @@ def fit_xgboostgpu_reg_model(X_train, y_train):
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_reg_model(model, X_test, y_test):
-    # Change to np arrays if needed
-    if isinstance(X_test, torch.Tensor):
-        X_test = X_test.cpu().numpy()
-    if isinstance(y_test, torch.Tensor):
-        y_test = y_test.cpu().numpy()
     # Evaluation
-    y_pred = np.ndarray.flatten(model.predict(X_test))
+    y_pred = model.predict(X_test)
+    y_pred = y_pred.cpu().numpy()
+    y_test = y_test.cpu().numpy()
+    y_pred = np.ndarray.flatten(y_pred)
     y_test = np.ndarray.flatten(y_test)
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
@@ -177,7 +174,6 @@ if __name__ == '__main__':
         all_fold_metrics = pd.DataFrame(columns=['MSE', 'RMSE', 'MAE', 'R2', 'Pearson', 'Spearman'])
     
     #FOR DEBUGGING
-    train_indices_already_done = set()
     test_indices_already_done = set()
     for i, (train_index, test_index) in enumerate(kf.split(range(data.n_samples))):
         print(f"Fold {i+1}")
@@ -188,18 +184,11 @@ if __name__ == '__main__':
 
         # FOR DEBUGGING
         # are there any overlapping indices between indices already done and current indices?
-        overlap_train = train_indices_already_done.intersection(set(train_idx_list))
         overlap_test = test_indices_already_done.intersection(set(test_idx_list))
-        if len(overlap_train) > 0:
-            raise ValueError(f"Overlap in training indices for fold {i+1}: {overlap_train}")
         if len(overlap_test) > 0:
             raise ValueError(f"Overlap in testing indices for fold {i+1}: {overlap_test}")
-        train_indices_already_done.update(train_idx_list)
         test_indices_already_done.update(test_idx_list)
-        print(f"Train indices done so far: {len(train_indices_already_done)}")
-        print(f"Test indices done so far: {len(test_indices_already_done)}")
-        print(f"Train indices this fold: {len(train_idx_list)}")
-        print(f"Test indices this fold: {len(test_idx_list)}")
+        print(f"Intersection of test indices with previously done test indices: {overlap_test}")
         # END FOR DEBUGGING
 
         # Fit the model and evaluate
