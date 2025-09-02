@@ -31,6 +31,11 @@ def fit_xgboostgpu_bc_model(X_train, y_train):
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_bc_model(model, X_test, y_test):
+    # Change to np arrays if needed
+    if isinstance(X_test, torch.Tensor):
+        X_test = X_test.cpu().numpy()
+    if isinstance(y_test, torch.Tensor):
+        y_test = y_test.cpu().numpy()
     # Evaluation
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -67,6 +72,11 @@ def fit_xgboostgpu_reg_model(X_train, y_train):
 # OUTPUT:
 #   fold_metrics: list
 def evaluate_xgboostgpu_reg_model(model, X_test, y_test):
+    # Change to np arrays if needed
+    if isinstance(X_test, torch.Tensor):
+        X_test = X_test.cpu().numpy()
+    if isinstance(y_test, torch.Tensor):
+        y_test = y_test.cpu().numpy()
     # Evaluation
     y_pred = np.ndarray.flatten(model.predict(X_test))
     y_test = np.ndarray.flatten(y_test)
