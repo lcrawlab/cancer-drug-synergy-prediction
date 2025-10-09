@@ -23,10 +23,10 @@ source env/bin/activate
 SCRATCH="scratch/anticancer-synergy-prediction-scratch/"
 export PYTHONPATH="${PYTHONPATH}:~/cancer-drug-synergy-prediction/"
 PYOF=$SCRATCH"experiments/20251002_combo_pcnngl/mfpdna_pcnngl_bc"$SLURM_ARRAY_TASK_ID".txt"
-PLOT=$SCRATCH"experiments/20251002_combo_pcnngl/mfpdna_pcnngl_bc"
+PLOT=$SCRATCH"experiments/20251002_combo_pcnngl/bc0/mfpdna/"
 
 # Run hyperparameter experiments using job array index to select hyperparameters in the vnn_experiments_oscar.py script
 # REMEMBER TO INDEX BY 1
 echo "Starting job $SLURM_ARRAY_TASK_ID on $HOSTNAME starting on `date`"
-python3 models/src/modelPCNNGL.py --score 'COMBOSCORE' --use_mfp --use_dna --use_bc --output_fp $PLOT"metrics.csv" > $PYOF
+python3 models/src/modelPCNNGL.py --score 'COMBOSCORE' --use_mfp --use_dna --use_bc --output_fp $PLOT > $PYOF
 echo "Job $SLURM_ARRAY_TASK_ID ended at `date`"
