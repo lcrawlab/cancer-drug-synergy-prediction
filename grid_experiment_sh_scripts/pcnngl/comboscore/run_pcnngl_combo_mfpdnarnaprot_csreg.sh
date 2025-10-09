@@ -24,7 +24,7 @@ SCRATCH="scratch/anticancer-synergy-prediction-scratch/"
 export PYTHONPATH="${PYTHONPATH}:~/cancer-drug-synergy-prediction/"
 PYOF=$SCRATCH"experiments/20251002_combo_pcnngl/mfpdnarnaprot_pcnngl_csreg"$SLURM_ARRAY_TASK_ID".txt"
 PLOT=$SCRATCH"experiments/20251002_combo_pcnngl/csreg/mfpdnarnaprot/"
-
+mkdir -p $PLOT
 # Run hyperparameter experiments using job array index to select hyperparameters in the vnn_experiments_oscar.py script
 # REMEMBER TO INDEX BY 1
 echo "Starting job $SLURM_ARRAY_TASK_ID on $HOSTNAME starting on `date`"
