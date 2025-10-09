@@ -465,6 +465,7 @@ if __name__ == "__main__":
     parser.add_argument('--use_dna', action='store_true', help='Include DNA data')
     parser.add_argument('--use_rna', action='store_true', help='Include RNA data')
     parser.add_argument('--use_prot', action='store_true', help='Include protein data')
+    parser.add_argument('--score', type=str, default='COMBOSCORE', help='Score to use for prediction task, should be one of COMBOSCORE, PERCENTGROWTH, ZIP, HSA')
     parser.add_argument('--use_bc', action='store_true', help='Use binary comboscore for prediction task')
     parser.add_argument('--use_csreg', action='store_true', help='Use regression on comboscore for prediction task')
     parser.add_argument('--use_pgreg', action='store_true', help='Use regression on percentage growth for prediction task')
@@ -476,6 +477,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Error check
+    if args.score not in ['COMBOSCORE', 'PERCENTGROWTH', 'ZIP', 'HSA']:
+        raise ValueError('Score should be one of COMBOSCORE, PERCENTGROWTH, ZIP, HSA')
+    if args.score == 'PERCENTGROWTH' and not args.use_pgreg:
+        raise ValueError('Must use percent growth regression if using PERCENTGROWTH score')
+    if args.score == 'PERCENTGROWTH' and args.use_bc:
+        raise ValueError('Cannot use binary classification if score is PERCENTGROWTH')
+    if args.use_pgreg and args.score != 'PERCENTGROWTH':
+        raise ValueError('Must use PERCENTGROWTH score if using percent growth regression')
     if args.use_mfp and args.mfp_len == 0:
         raise ValueError('Must specify mfp length if using mfp')
     if not (args.use_mfp or args.use_dna or args.use_rna or args.use_prot):
@@ -515,15 +524,32 @@ if __name__ == "__main__":
     if params["optimizer"] != 'Adam':
         raise Exception("Error: optimizer not supported, only Adam implemented")
 
-    # Get the data
-    print("Loading data...")
-    data_fn = get_all_cancer_dataset_filename(args.use_mfp, args.use_dna, args.use_rna, args.use_prot, args.use_bc, args.use_csreg, args.use_pgreg, args.mfp_len, args.bc_cutoff)
-    filter_indices_fn = None
-    if args.tissue != 'all_cancer':
-        filter_indices_fn = get_cancer_type_indices_filename(args.tissue, args.use_bc, args.use_csreg, args.use_pgreg)
-    elif args.drug_class != 'all_drugs':
-        filter_indices_fn = get_drug_class_indices_filename(args.drug_class, args.use_bc, args.use_csreg, args.use_pgreg)
-    data = MorganFingerprintDataset(filename=data_fn, balance_classes=args.use_bc, indices_filter_fn=filter_indices_fn)
+    # Get the filename
+    h5_path = 'data/ASP_dataset_slices/all_256mfpdnarnaprot.h5'
+    non_pg_data_path = 'data/ASP_dataset_slices/drug_comboscore_hsa_zip.csv'
+    pg_data_path = 'data/ASP_dataset_slices/drug_percent_growth.csv'
+    plot_path = args.output_fp + '_'
+
+    if args.use_pgreg:
+        data_path = pg_data_path
+    else:
+        data_path = non_pg_data_path
+
+    # Load the data
+    data = H5Dataset(
+        h5_path=h5_path,
+        data_path=data_path,
+        target_column=args.score,
+        binary_classification=args.use_bc,
+        balance_classes=args.use_bc,
+        cancer_type=args.tissue,
+        drug_class=args.drug_class,
+        use_mfp=args.use_mfp,
+        use_dna=args.use_dna,
+        use_rna=args.use_rna,
+        use_prot=args.use_prot,
+        device=device,
+    )
 
     # Get the mask
     mask_fp = args.output_fp + str(args.job_index) + 'mask.csv'
