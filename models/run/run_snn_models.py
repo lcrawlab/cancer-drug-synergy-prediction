@@ -249,41 +249,43 @@ if __name__ == '__main__':
         all_fold_metrics = pd.DataFrame(columns=['MSE', 'RMSE', 'MAE', 'R2', 'Pearson', 'Spearman'])
 
     # Parallelization Code
-    # fold_args = [(i, train_index, test_index) for i, (train_index, test_index) in enumerate(kf.split(data.x))]
-    # process_fold_partial = partial(process_fold, data=data, args=args)
+    if args.use_pgreg:
+        fold_args = [(i, train_index, test_index) for i, (train_index, test_index) in enumerate(kf.split(data.x))]
+        process_fold_partial = partial(process_fold, data=data, args=args)
 
-    # with Pool() as pool:
-    #     results = pool.starmap(process_fold_partial, fold_args)
-    
-    # results.sort(key=lambda x:x[0])
-    # for i, fold_metrics in results:
-    #     all_fold_metrics.loc[i] = fold_metrics
+        with Pool() as pool:
+            results = pool.starmap(process_fold_partial, fold_args)
+        
+        results.sort(key=lambda x:x[0])
+        for i, fold_metrics in results:
+            all_fold_metrics.loc[i] = fold_metrics
 
     # Serial Code
-    for i, (train_index, test_index) in enumerate(kf.split(data.x)):
-        print(f"Fold {i+1}")
+    else:
+        for i, (train_index, test_index) in enumerate(kf.split(data.x)):
+            print(f"Fold {i+1}")
 
-        train_subset = Subset(data, train_index)
-        train_dataloader = DataLoader(train_subset, batch_size=128, shuffle=True)
-        test_subset = Subset(data, test_index)
-        test_dataloader = DataLoader(test_subset, batch_size=128, shuffle=True)
+            train_subset = Subset(data, train_index)
+            train_dataloader = DataLoader(train_subset, batch_size=128, shuffle=True)
+            test_subset = Subset(data, test_index)
+            test_dataloader = DataLoader(test_subset, batch_size=128, shuffle=True)
 
-        # Fit the model and evaluate
-        model = None
-        num_features = train_dataloader.dataset[0][0].shape[0]
-        if args.use_bc:
-            model = fit_snn_bc_model(train_dataloader, num_features, plot_path)
-            fold_metrics = evaluate_snn_bc_model(model, test_dataloader)
-        elif args.use_csreg:
-            model = fit_snn_reg_model(train_dataloader, num_features, plot_path)
-            fold_metrics = evaluate_snn_reg_model(model, test_dataloader)
-        elif args.use_pgreg:
-            model = fit_snn_reg_model(train_dataloader, num_features, plot_path)
-            fold_metrics = evaluate_snn_reg_model(model, test_dataloader)
-        else:
-            raise ValueError('No prediction task specified')
-        
-        all_fold_metrics.loc[i] = fold_metrics
+            # Fit the model and evaluate
+            model = None
+            num_features = train_dataloader.dataset[0][0].shape[0]
+            if args.use_bc:
+                model = fit_snn_bc_model(train_dataloader, num_features, plot_path)
+                fold_metrics = evaluate_snn_bc_model(model, test_dataloader)
+            elif args.use_csreg:
+                model = fit_snn_reg_model(train_dataloader, num_features, plot_path)
+                fold_metrics = evaluate_snn_reg_model(model, test_dataloader)
+            elif args.use_pgreg:
+                model = fit_snn_reg_model(train_dataloader, num_features, plot_path)
+                fold_metrics = evaluate_snn_reg_model(model, test_dataloader)
+            else:
+                raise ValueError('No prediction task specified')
+            
+            all_fold_metrics.loc[i] = fold_metrics
 
     # Save the metrics
     all_fold_metrics.to_csv(args.output_fp + "all_fold_metrics.csv", index=True, header=True)

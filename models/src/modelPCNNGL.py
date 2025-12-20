@@ -206,7 +206,7 @@ class PCNNGLModel(nn.Module):
                 #     print(f'Early stopping at epoch {epoch}, Loss: {epoch_train_loss:.4f}, Accuracy: {epoch_train_acc:.2f}%, Tune Loss: {epoch_tune_loss:.4f}, Tune Accuracy: {epoch_tune_acc:.2f}%')
                 #     break
 
-            if (epoch) % 50 == 0:
+            if (epoch) % 100 == 0:
                 # Save weights of trained model to output file
                 torch.save(self.state_dict(), checkpoint_dir + '/wts_trep' + str(epoch) + '.pth')
                 if not checked_state_dict:
