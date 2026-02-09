@@ -131,6 +131,7 @@ class PCNNGLModel(nn.Module):
         epsilon=-9999.0,
         output_file_prefix='',
     ):
+        print("Made it into fit") #TODO remove
         train_dir = output_file_prefix + '/training'
         if not os.path.exists(train_dir):
             os.makedirs(train_dir)
@@ -158,13 +159,22 @@ class PCNNGLModel(nn.Module):
                 if x_batch.size(0) == 1:
                     continue
                 x_batch, y_batch = x_batch.to(self.device), y_batch.to(self.device)
+                print(f"x_batch device: {x_batch.device}, y_batch device: {y_batch.device}") #TODO remove
+                print(f"y_batch device: {y_batch.device}, y_batch shape: {y_batch.shape}") #TODO remove
+                print(f"x_batch shape: {x_batch.shape}, y_batch shape: {y_batch.shape}") #TODO remove
                 if not checked_batch_device:
                     checked_batch_device = True
                 y_pred = self.forward(x_batch)
+                print(f"y_pred device: {y_pred.device}, y_pred shape: {y_pred.shape}") #TODO remove
+                print(f"y_pred shape: {y_pred.shape}") #TODO remove
                 loss = self.loss_fxn(y_pred, y_batch)
+                print("Got loss") #TODO remove
                 optimizer.zero_grad()
+                print("Zeroed optimizer") #TODO remove
                 loss.backward()
+                print("Backpropagated loss") #TODO remove
                 optimizer.step()
+                print("Optimizer stepped") #TODO remove
 
                 train_loss += loss.item()
                 if self.binary_classification:
