@@ -24,7 +24,7 @@ class H5Dataset(Dataset):
 
     def __init__(self, h5_path, data_path, target_column, binary_classification=False, balance_classes=False,
                  cancer_type='all_cancer', drug_class='all_drugs',  # Optional parameters for filtering
-                 use_mfp=True, use_dna=True, use_rna=True, use_prot=True, device='cpu'):
+                 use_mfp=True, use_dna=True, use_rna=True, use_prot=True, device='cpu', random_state=42):
         if not binary_classification and balance_classes:
             raise ValueError('Cannot balance classes if not binary classification')
         if not (use_mfp or use_dna or use_rna or use_prot):
@@ -56,6 +56,11 @@ class H5Dataset(Dataset):
         self.use_rna = use_rna
         self.use_prot = use_prot
         self.device = device
+        self.random_state = random_state
+        self.rng = np.random.default_rng(self.random_state)
+        self.cell_names = None
+        self.nsc1 = None
+        self.nsc2 = None
 
         # Get the indices for the cancer type and drug class
         if self.cancer_type != 'all_cancer' or self.drug_class != 'all_drugs':
@@ -177,9 +182,9 @@ class H5Dataset(Dataset):
                 n_positive = len(positive_indices)
                 n_negative = len(negative_indices)
                 if n_positive < n_negative:
-                    negative_indices = np.random.choice(negative_indices, n_positive, replace=False)
+                    negative_indices = self.rng.choice(negative_indices, n_positive, replace=False)
                 else:
-                    positive_indices = np.random.choice(positive_indices, n_negative, replace=False)
+                    positive_indices = self.rng.choice(positive_indices, n_negative, replace=False)
                 indices = np.concatenate([positive_indices, negative_indices]) # Just make sure to shuffle this later
                 data_df = data_df.iloc[indices].reset_index(drop=True)
                 y = y[indices]
@@ -236,6 +241,11 @@ class H5Dataset(Dataset):
             X[:, feature_idx:feature_idx+786] = prot_data[cell_prot_indices]
             feature_idx += 786
         
+        # Preserve IDs aligned with each feature row for grouped CV.
+        self.cell_names = data_df['CELLNAME'].astype(str).to_numpy()
+        self.nsc1 = data_df['NSC1'].to_numpy()
+        self.nsc2 = data_df['NSC2'].to_numpy()
+
         # Convert to torch tensors
         self.x = torch.from_numpy(X).to(self.device)
         self.y = torch.from_numpy(y).unsqueeze(1).to(self.device)
